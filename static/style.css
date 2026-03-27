@@ -1,0 +1,22 @@
+body{
+    background:black;
+    color:#4d88ff;
+    font-family:monospace;
+    text-align:center;
+}
+
+.game{
+    width:600px;
+    margin:auto;
+    padding:30px;
+}
+
+input{
+    width:80%;
+    padding:10px;
+}
+
+button{
+    padding:10px;
+    margin-top:10px;
+}

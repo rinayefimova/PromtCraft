@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PromptCraft</title>
 <link rel="stylesheet" href="/static/style.css">
 </head>
 
 <body>
 
-<div class="game">
+<div class="container">
 
 <h1>PromptCraft</h1>
 
@@ -26,22 +28,40 @@ can navigate the ruins of the machine world.</p>
 
 </div>
 
-<div class="room">
+<div class="rules">
+            <h3>Rules</h3>
+            <p>In this world, machines respond only to well-written prompts.</p>
+            <p>Type a command to instruct the AI.</p>
+            <p>Examples:</p>
+            <ul>
+                <li>"Open the door"</li>
+                <li>"Generate a bridge"</li>
+                <li>"Illuminate the room"</li>
+            </ul>
+        </div>
 
-<h2>AI Gate Chamber</h2>
+<div class="game-box">
 
-<p>Goal: Get through the locked door</p>
+<h2 id="level-title">Level 1</h2>
 
-<p class="guardian">AI Guardian: "Provide a command."</p>
+ <p><strong>Room:</strong> <span id="room"></span></p>
+ <p><strong>Goal:</strong> <span id="goal"></span></p>
 
-</div>
+<p class="guardian" id="guardian"></p>
 
-<input id="promptInput" placeholder="Type your prompt...">
+<input id="promptInput" type="text" placeholder="Type your prompt here...">
+            
+
+</div class="button-group">
 
 <button onclick="sendPrompt()">Submit</button>
+<button onclick="nextLevel()" id="nextButton" style="display: none;">Next Level</button>
+<button onclick="restartGame()">Restart</button>
+</div>
 
 <p id="response"></p>
 
+</div>
 </div>
 
 <script src="/static/script.js"></script>

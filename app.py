@@ -2,29 +2,104 @@ from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
-current_level = 1
+levels = {
+    1: {
+        "room": "AI Gate Chamber",
+        "goal": "Get through the locked door",
+        "guardian": 'AI Guardian: "Provide a command."',
+        "success": "AI Guardian: Command accepted. The door opens.",
+        "hint": "AI Guardian: Try using words like 'open', 'unlock', and 'door'.",
+        "keywords": ["open", "unlock", "door"]
+    },
+    2: {
+        "room": "Broken Bridge",
+        "goal": "Create a bridge to cross the gap",
+        "guardian": 'Bridge AI: "State the structure you need."',
+        "success": "Bridge AI: Bridge generated successfully.",
+        "hint": "Bridge AI: Try using words like 'generate', 'build', 'create', and 'bridge'.",
+        "keywords": ["generate", "build", "create", "bridge"]
+    },
+    3: {
+        "room": "Dark Archive",
+        "goal": "Light up the room to reveal the path",
+        "guardian": 'Light AI: "The archive awaits your instruction."',
+        "success": "Light AI: Illumination activated. The room glows.",
+        "hint": "Light AI: Try using words like 'illuminate', 'light', 'activate', or 'room'.",
+        "keywords": ["illuminate", "light", "activate", "room"]
+    },
+    4: {
+        "room": "Ancient Terminal",
+        "goal": "Analyze the mysterious symbol",
+        "guardian": 'Terminal AI: "Request analysis."',
+        "success": "Terminal AI: Symbol decoded. A hidden message appears.",
+        "hint": "Terminal AI: Try using words like 'analyze', 'decode', 'explain', or 'symbol'.",
+        "keywords": ["analyze", "decode", "explain", "symbol"]
+    },
+    5: {
+        "room": "Core Chamber",
+        "goal": "Convince the final AI to grant access",
+        "guardian": 'Core AI: "Only the worthy may enter."',
+        "success": "Core AI: Access granted. You have mastered PromptCraft.",
+        "hint": "Core AI: Try using phrases like 'grant access', 'authorize', 'allow entry', or 'open core'.",
+        "keywords": ["grant", "access", "authorize", "allow", "entry", "open", "core"]
+    }
+}
+
 
 @app.route("/")
 def home():
     return render_template("index.html")
 
+@app.route("/level/<int:level_num>")
+def get_level(level_num):
+    if level_num not in levels:
+        return jsonify({"error": "Level not found"}), 404
+
+    level = levels[level_num]
+    return jsonify({
+        "level": level_num,
+        "room": level["room"],
+        "goal": level["goal"],
+        "guardian": level["guardian"]
+    })
+
 
 @app.route("/command", methods=["POST"])
 def command():
+    data = request.json
+    user_prompt = data["prompt"].lower().strip()
+    level_num = data["level"]
 
-    user_prompt = request.json["prompt"].lower()
+    if level_num not in levels:
+        return jsonify({"response": "Invalid level.", "success": False})
 
-    if current_level == 1:
+    level = levels[level_num]
 
-        if "open" in user_prompt or "unlock" in user_prompt:
-            response = "AI Guardian: Command accepted. The door opens."
-        elif "hint" in user_prompt:
-            response = "AI Guardian: Try using 'open' or 'unlock'."
-        else:
-            response = "AI Guardian: Command unclear."
+    if user_prompt == "hint":
+        return jsonify({"response": level["hint"], "success": False})
 
-    return jsonify({"response": response})
+    matched_keywords = sum(1 for word in level["keywords"] if word in user_prompt)
 
+    if level_num == 5:
+        is_correct = matched_keywords >= 2
+    else:
+        is_correct = matched_keywords >= 2
+
+    if is_correct:
+        next_level = level_num + 1
+        game_complete = next_level > len(levels)
+
+        return jsonify({
+            "response": level["success"],
+            "success": True,
+            "next_level": None if game_complete else next_level,
+            "game_complete": game_complete
+        })
+
+    return jsonify({
+        "response": "Command unclear. Type 'hint' if you need help.",
+        "success": False
+    })
 
 if __name__ == "__main__":
     app.run(debug=True)

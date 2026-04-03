@@ -96,8 +96,24 @@ def command():
             "game_complete": game_complete
         })
 
+    # Case 1: Only object (like "door")
+    if any(word in user_prompt for word in ["door", "bridge", "room", "symbol", "core"]):
+        return jsonify({
+            "response": "AI: You mentioned an object, but what do you want to do with it? Try adding an action like 'open' or 'create'.",
+            "success": False
+        })
+
+     # Case 2: Only action (like "open")
+    if any(word in user_prompt for word in ["open", "unlock", "generate", "build", "analyze"]):
+        return jsonify({
+            "response": "AI: Good action, but what is your target? Be more specific.",
+            "success": False
+        })
+
+
+    # Case 3: Too vague
     return jsonify({
-        "response": "Command unclear. Type 'hint' if you need help.",
+        "response": "Command unclear. Try combining an action and an object. Type 'hint' if you need help.",
         "success": False
     })
 
